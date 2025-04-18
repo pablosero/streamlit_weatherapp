@@ -82,7 +82,7 @@ def get_weather_emoji(weather_id):
 
 # ------------------ Fehleranzeige ------------------
 def show_error(msg):
-    temp_display.markdown(f'<div class="temp-display" style="font-size:20px !important;">{msg}</div>', unsafe_allow_html=True)
+    temp_display.markdown(f'<div style="font-size:20px; text-align:center; font-family: Calibri, sans-serif;">{msg}</div>', unsafe_allow_html=True)
     emoji_display.empty()
     desc_display.empty()
 
