@@ -3,6 +3,7 @@ import requests
 
 st.set_page_config(page_title="Weather App", layout="centered")
 
+# ------------------ Styling ------------------
 st.markdown("""
     <style>
         .big-label {
@@ -39,9 +40,16 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
+# ------------------ Input ------------------
 st.markdown('<div class="big-label">Enter City Name:</div>', unsafe_allow_html=True)
 city = st.text_input("", key="city_input", label_visibility="collapsed", placeholder="e.g. Berlin")
 
+# ------------------ Platzhalter vorbereiten ------------------
+temp_display = st.empty()
+emoji_display = st.empty()
+desc_display = st.empty()
+
+# ------------------ Wetter-Emoji ------------------
 def get_weather_emoji(weather_id):
     if 200 <= weather_id <= 232:
         return "⛈️"
@@ -72,11 +80,13 @@ def get_weather_emoji(weather_id):
     else:
         return ""
 
+# ------------------ Fehleranzeige ------------------
 def show_error(msg):
-    st.markdown(f'<div class="temp-display" style="font-size:40px;">{msg}</div>', unsafe_allow_html=True)
-    st.markdown('<div class="emoji-display"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="desc-display"></div>', unsafe_allow_html=True)
+    temp_display.markdown(f'<div class="temp-display" style="font-size:40px;">{msg}</div>', unsafe_allow_html=True)
+    emoji_display.empty()
+    desc_display.empty()
 
+# ------------------ API-Anfrage ------------------
 def fetch_weather(city):
     api_key = "a18f098c4ae3d1d803e1241f434e8a1e"
     url = f"https://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric&lang=en"
@@ -91,9 +101,9 @@ def fetch_weather(city):
             desc = data["weather"][0]["description"]
             weather_id = data["weather"][0]["id"]
 
-            st.markdown(f'<div class="temp-display">{temp_c:.1f}°C</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="emoji-display">{get_weather_emoji(weather_id)}</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="desc-display">{desc.capitalize()}</div>', unsafe_allow_html=True)
+            temp_display.markdown(f'<div class="temp-display">{temp_c:.1f}°C</div>', unsafe_allow_html=True)
+            emoji_display.markdown(f'<div class="emoji-display">{get_weather_emoji(weather_id)}</div>', unsafe_allow_html=True)
+            desc_display.markdown(f'<div class="desc-display">{desc.capitalize()}</div>', unsafe_allow_html=True)
         else:
             show_error("Unknown error – maybe city not found?")
 
@@ -117,8 +127,9 @@ def fetch_weather(city):
     except requests.exceptions.RequestException as e:
         show_error(f"Request error: {e}")
 
-# Automatischer Abruf bei Eingabe oder Button
+# ------------------ Ausführung ------------------
 if city:
     fetch_weather(city)
+
 if st.button("Get Weather"):
     fetch_weather(city)
